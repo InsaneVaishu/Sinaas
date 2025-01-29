@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Business;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
+
 use App\Models\BusinessBilling;
 use App\Models\BusinessWorking;
-
 use App\Models\BusinessDelivery;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -21,9 +23,10 @@ class BusinessController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //return Business::all(); where('user_id', Auth::user()->id)->get()
-       
+    {       
+        //echo Auth::user()->id; exit;
+        $user = Customer::where('id', Auth::user()->id)->first();
+        $username = $user['first_name'];
         $results = Business::where('user_id', Auth::user()->id)->get();
         $businesses = [];
         foreach($results as $result){
@@ -58,6 +61,7 @@ class BusinessController extends Controller
 
         return $this->success([
             'businesses' => $businesses,
+            'user_name' => $username,
             //'token' => $user->createToken('API Token')->plainTextToken
         ]);
     }
