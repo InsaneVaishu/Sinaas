@@ -32,7 +32,7 @@ class OptionsController extends Controller
             $option_id = $result->id;
 //echo $option_id; exit;
             $stocks = [];
-            $stocks_list = OptionStock::query()->leftJoin('stocks', 'stocks.id', '=', 'option_stocks.stock_id')->leftJoin('inventories', 'stocks.inventory_id', '=', 'inventories.id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->select("option_stocks.*","option_stocks.id as id","option_stocks.status as status","inventory_names.name as name","inventories.inventory_image as image")->where('option_stocks.option_id', $option_id)->get();
+            $stocks_list = OptionStock::query()->leftJoin('stocks', 'stocks.id', '=', 'option_stocks.stock_id')->leftJoin('inventories', 'stocks.inventory_id', '=', 'inventories.id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->select("option_stocks.*","option_stocks.id as id","option_stocks.status as status","inventory_names.name as name","stocks.image as image")->where('option_stocks.option_id', $option_id)->get();
 
             foreach($stocks_list as $stock){
 
@@ -80,7 +80,7 @@ class OptionsController extends Controller
                           
 //echo $option_id; exit;
         $stocks = [];
-        $stocks_list = OptionStock::query()->leftJoin('stocks', 'stocks.id', '=', 'option_stocks.stock_id')->leftJoin('inventories', 'stocks.inventory_id', '=', 'inventories.id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select("option_stocks.*",'units.code AS code',"option_stocks.id as id","option_stocks.status as status","inventory_names.name as name","inventories.inventory_image as image")->where('option_stocks.option_id', $option_id)->get();
+        $stocks_list = OptionStock::query()->leftJoin('stocks', 'stocks.id', '=', 'option_stocks.stock_id')->leftJoin('inventories', 'stocks.inventory_id', '=', 'inventories.id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select("option_stocks.*",'units.code AS code',"option_stocks.id as id","option_stocks.status as status","inventory_names.name as name","stocks.image as image")->where('option_stocks.option_id', $option_id)->get();
 
             foreach($stocks_list as $stock){
 
@@ -145,7 +145,7 @@ class OptionsController extends Controller
     {
         $business_id = $request->business_id;
 
-        $results = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('units.code AS code','inventories.inventory_image as image','inventory_names.name AS name', 'stocks.id as id')->orderBy('inventory_names.name')->get();
+        $results = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->orderBy('inventory_names.name')->get();
         
         $option_stocks = [];
         foreach($results as $result){

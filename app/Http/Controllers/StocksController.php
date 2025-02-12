@@ -22,7 +22,7 @@ class StocksController extends Controller
     {
         $business_id = $request->business_id;
 
-        $results = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity','units.code AS code','inventories.inventory_image as image','inventory_names.name AS name', 'stocks.id as id')->orderBy('inventory_names.name')->get();
+        $results = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->orderBy('inventory_names.name')->get();
         
         $option_stocks = [];
         foreach($results as $result){
@@ -53,24 +53,30 @@ class StocksController extends Controller
        // $request->validated(); 
         $user_id = Auth::user()->id;  
         
-        /*$name = $request->name;
-        $inventory_id = $request->inventory_id;
-        if($inventory_id==''){
-            $name = InventoryNames::create([      
-                'name' => $request->name,
-                'name_en' => $request->name,
-                'name_es' => $request->name,
-            ]);
-            $name_id = $name->id;
-        }*/
-
+        $name = $request->name;
+        $name_id = $request->name_id;
+        if($name_id==''){
+            $name_info = InventoryNames::query()->where('name', $name)->first();
+            if (!$name_info) { 
+                $name = InventoryNames::create([      
+                    'name' => $request->name,
+                    'name_en' => $request->name,
+                    'name_es' => $request->name,
+                ]);
+                $name_id = $name->id;
+            }else{
+                $name_id = $name_info->id; 
+            }
+        }
+//echo  $name_id; exit;
         $stock = Stocks::create([            
             'business_id' => $request->business_id,
-            'inventory_id' => $request->inventory_id,
+            'inventory_id' => $request->inventory_id,            
             //'buy_price' => $request->buy_price,
             'unit_id' => $request->unit_id,
             'quantity' => $request->quantity,
             'quantity_alert' => $request->quantity_alert,
+            'name_id' => $name_id,
         ]);
 
             $stock_id = $stock->id;
@@ -80,14 +86,14 @@ class StocksController extends Controller
                 $img = str_replace('data:image/png;base64,', '', $img);
                 $img = str_replace(' ', '+', $img);
                 $data = base64_decode($img);
-                $filename = 'products/' . uniqid() . '.png';
+                $filename = 'stocks/' . uniqid() . '.png';
                 $file = storage_path("app/public/"). $filename;        
                 if (file_put_contents($file, $data)) {
                     $update = Stocks::where('id', $stock_id)->update(array('image' => $filename));
                 }
             }       
 
-            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock->id)->first();
+            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.name_id','stocks.inventory_id','stocks.business_id','stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock->id)->first();
 
             if($result->image){
                 $image = env('APP_URL').Storage::url($result->image);
@@ -100,6 +106,7 @@ class StocksController extends Controller
                     "business_id" => (string)$result->business_id,
                     "inventory_id"  => (string)$result->inventory_id,
                     "name"  => (string)$result->name,
+                    "name_id"  => (string)$result->name_id,
                     "quantity"  => (string)$result->quantity,
                     "image" => $image,
                     "unit_id"  => (string)$result->unit_id,
@@ -116,11 +123,28 @@ class StocksController extends Controller
     {
        // $request->validated(); 
         $user_id = Auth::user()->id; 
+
+        $name = $request->name;
+        $name_id = $request->name_id;
+        if($name_id==''){
+            $name_info = InventoryNames::query()->where('name', $name)->first();
+            if (!$name_info->first()) { 
+                $name = InventoryNames::create([      
+                    'name' => $request->name,
+                    'name_en' => $request->name,
+                    'name_es' => $request->name,
+                ]);
+                $name_id = $name->id;
+            }else{
+                $name_id = $name_info->id; 
+            }
+        }
         
         $stock_id = $request->stock_id;
 
         $stock = Stocks::where('id', $stock_id)->update([
             'inventory_id' => $request->inventory_id,
+            'name_id' => $name_id,
             //'buy_price' => $request->buy_price,
             'unit_id' => $request->unit_id,
             'quantity' => $request->quantity,
@@ -139,7 +163,7 @@ class StocksController extends Controller
                 }
             }       
 
-            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
+            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.name_id','stocks.inventory_id','stocks.business_id','stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
 
             if($result->image){
                 $image = env('APP_URL').Storage::url($result->image);
@@ -152,6 +176,7 @@ class StocksController extends Controller
                     "business_id" => (string)$result->business_id,
                     "inventory_id"  => (string)$result->inventory_id,
                     "name"  => (string)$result->name,
+                    "name_id"  => (string)$result->name_id,
                     "quantity"  => (string)$result->quantity,
                     "image" => $image,
                     "unit_id"  => (string)$result->unit_id,
@@ -172,7 +197,7 @@ class StocksController extends Controller
         
         $stock_id = $request->stock_id;
 
-        $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity', 'stocks.unit_id', 'stocks.inventory_id','units.code AS code','inventories.inventory_image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
+        $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.name_id','stocks.inventory_id','stocks.business_id','stocks.quantity', 'stocks.unit_id', 'stocks.inventory_id','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
 
             if($result->image){
                 $image = env('APP_URL').Storage::url($result->image);
@@ -185,6 +210,7 @@ class StocksController extends Controller
                     "business_id" => (string)$result->business_id,
                     "inventory_id"  => (string)$result->inventory_id,
                     "name"  => (string)$result->name,
+                    "name_id"  => (string)$result->name_id,
                     "quantity"  => (string)$result->quantity,
                     "image" => $image,
                     "unit_id"  => (string)$result->unit_id,
@@ -228,6 +254,26 @@ class StocksController extends Controller
 
         return $this->success([
             'inventories' => $inventories
+        ]);
+    }
+
+    public function stocks_name_list(Request $request)
+    {
+        $language_code = strtolower($request->language_code);
+
+        if(!$language_code){ $language_code = 'en';}
+
+        $results = InventoryNames::query()->select("name_".$language_code." as language_name","id")->get();
+    
+        $products_names = [];
+        foreach($results as $result){
+            $products_names[] = [
+                "name" => $result->language_name,
+                "name_id" => $result->id];
+        }        
+
+        return $this->success([
+            'stock_names' => $products_names
         ]);
     }
 

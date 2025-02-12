@@ -21,7 +21,7 @@ class CustomizesController extends Controller
         //$business_id = $request->business_id;
         
         $product_id = $request->product_id;
-        $results = Customize::query()->leftJoin('stocks', 'stocks.id', '=', 'customizes.stock_id')->leftJoin('inventories', 'stocks.inventory_id', '=', 'inventories.id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('customizes.*','customizes.id as id','customizes.status as status','units.code AS code','inventory_names.name as name','inventories.inventory_image as image')->where('customizes.product_id', $product_id)->get();
+        $results = Customize::query()->leftJoin('stocks', 'stocks.id', '=', 'customizes.stock_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('customizes.*','customizes.id as id','customizes.status as status','units.code AS code','inventory_names.name as name','stocks.image as image')->where('customizes.product_id', $product_id)->get();
     
         $customizes = [];
         foreach($results as $result){    
@@ -88,7 +88,7 @@ class CustomizesController extends Controller
         }
 
         $product_id = $request->product_id;
-        $results = Customize::query()->leftJoin('stocks', 'stocks.id', '=', 'customizes.stock_id')->leftJoin('inventories', 'stocks.inventory_id', '=', 'inventories.id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('customizes.*','customizes.id as id','customizes.status as status','units.code AS code','inventory_names.name as name','inventories.inventory_image as image')->where('customizes.product_id', $product_id)->get();
+        $results = Customize::query()->leftJoin('stocks', 'stocks.id', '=', 'customizes.stock_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('customizes.*','customizes.id as id','customizes.status as status','units.code AS code','inventory_names.name as name','stocks.image as image')->where('customizes.product_id', $product_id)->get();
     
         $customizes = [];
         foreach($results as $result){    
@@ -131,7 +131,7 @@ class CustomizesController extends Controller
         //$business_id = $request->business_id;
         
         $customize_id = $request->customize_id;
-        $result = Customize::query()->leftJoin('stocks', 'stocks.id', '=', 'customizes.stock_id')->leftJoin('inventories', 'stocks.inventory_id', '=', 'inventories.id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->select('customizes.*','customizes.id as id','customizes.status as status','inventory_names.name as name','inventories.inventory_image as image')->where('customizes.id', $customize_id)->first();
+        $result = Customize::query()->leftJoin('stocks', 'stocks.id', '=', 'customizes.stock_id')->leftJoin('inventories', 'stocks.inventory_id', '=', 'inventories.id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->select('customizes.*','customizes.id as id','customizes.status as status','inventory_names.name as name','stocks.image as image')->where('customizes.id', $customize_id)->first();
       
             
             if($result->image){

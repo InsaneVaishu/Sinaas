@@ -12,7 +12,7 @@ class Stocks extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['inventory_id','business_id','image','unit_id', 'buy_price', 'quantity', 'quantity_alert' ,'status'];
+    protected $fillable = ['name_id','inventory_id','business_id','image','unit_id', 'buy_price', 'quantity', 'quantity_alert' ,'status'];
 
     public function businesses(): BelongsTo
     {

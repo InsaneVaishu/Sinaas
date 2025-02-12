@@ -84,6 +84,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/dashboard/product/delete',  [ProductsController::class, 'delete']);
     Route::post('/dashboard/product/update_status',  [ProductsController::class, 'update_status']);
     Route::post('/dashboard/product/get_product_count',  [ProductsController::class, 'get_product_count']);
+    Route::post('/dashboard/product/product_stocks_list',  [ProductsController::class, 'product_stocks_list']);
 
     Route::post('/dashboard/product/add_product_category',  [ProductsController::class, 'add_product_category']);
     Route::post('/dashboard/product/add_product_kitchen',  [ProductsController::class, 'add_product_kitchen']);
@@ -94,6 +95,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/dashboard/product/edit_product_options',  [ProductsController::class, 'edit_product_options']);  
     
     Route::post('/dashboard/product/delete_product_option',  [ProductsController::class, 'delete_product_option']);  
+    
     
     
     Route::post('/dashboard/orders/list',  [OrdersController::class, 'list']);
@@ -113,6 +115,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/dashboard/stocks/info',  [StocksController::class, 'info']);
     Route::post('/dashboard/stocks/delete',  [StocksController::class, 'delete']);
     Route::post('/dashboard/stocks/update_quantity',  [StocksController::class, 'update_quantity']);
+    Route::post('/dashboard/stocks/stocks_name_list',  [StocksController::class, 'stocks_name_list']);
 
     Route::post('/dashboard/stocks/inventory_list',  [StocksController::class, 'inventory_list']);
 

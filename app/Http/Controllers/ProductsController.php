@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Stocks;
 use App\Models\Options;
 use App\Models\Products;
-use App\Models\Categories;
 use App\Models\Customize;
+use App\Models\Categories;
 use App\Models\ProductTax;
-use App\Models\Description;
 
+use App\Models\Description;
 use App\Models\OptionStock;
 use App\Models\ProductTags;
 use App\Models\ProductPrice;
@@ -818,6 +819,44 @@ class ProductsController extends Controller
         return $this->success([
             'option_id' => (string)$option_id,
         ],'Product Option deleted successfully!');
+    }
+
+
+    public function product_stocks_list(Request $request)
+    {
+        $product_id = $request->product_id;
+
+        $results = ProductStocks::where('product_id', $product_id)->get("stock_id");
+        $stock_list = array();
+        foreach($results as $result){          
+
+            $stock_id = $result->stock_id;
+
+            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity', 'stocks.unit_id', 'stocks.inventory_id','units.code AS code','inventories.inventory_image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
+
+                if($result->image){
+                    $image = env('APP_URL').Storage::url($result->image);
+                }
+                else{
+                    $image = env('APP_URL').Storage::url('no-image.jpg');
+                }                  
+
+                $stock_list[] = ["stock_id" => (string)$stock_id,
+                        "business_id" => (string)$result->business_id,
+                        "inventory_id"  => (string)$result->inventory_id,
+                        "name"  => (string)$result->name,
+                        "quantity"  => (string)$result->quantity,
+                        "stock_image" => $image,
+                        "unit_id"  => (string)$result->unit_id,
+                        "unit_code"  => (string)$result->code,
+                        "quantity_alert" => (string)$result->quantity_alert];
+
+
+        }      
+        
+        return $this->success([
+            'option_stocks' => $stock_list
+        ]);
     }
 
 
