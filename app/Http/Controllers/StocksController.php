@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Stocks;
 use App\Models\Inventories;
+use App\Models\ProductStocks;
+use App\Models\OptionStock;
+use App\Models\Customize;
+
 use Illuminate\Http\Request;
 use App\Models\ProductsNames;
 use App\Traits\HttpResponses;
@@ -22,13 +26,13 @@ class StocksController extends Controller
     {
         $business_id = $request->business_id;
 
-        $results = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->orderBy('inventory_names.name')->get();
+        $results = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.unit_quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->orderBy('inventory_names.name')->get();
         
         $option_stocks = [];
         foreach($results as $result){
 
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image);
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -38,7 +42,7 @@ class StocksController extends Controller
                 "stock_id" => $result->id,
                 "name" => $result->name,
                 "stock_image" => $image,
-                "quantity" => (string)$result->quantity,
+                "unit_quantity" => (string)$result->unit_quantity,
                 "unit_code"  => (string)$result->code
             ];
         }
@@ -93,10 +97,10 @@ class StocksController extends Controller
                 }
             }       
 
-            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.name_id','stocks.inventory_id','stocks.business_id','stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock->id)->first();
+            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity_alert','stocks.name_id','stocks.inventory_id','stocks.business_id','stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock->id)->first();
 
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image);
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -119,7 +123,7 @@ class StocksController extends Controller
     }
 
 
-    public function edit(Request $request)
+    public function edit(Request $request) 
     {
        // $request->validated(); 
         $user_id = Auth::user()->id; 
@@ -163,10 +167,10 @@ class StocksController extends Controller
                 }
             }       
 
-            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.name_id','stocks.inventory_id','stocks.business_id','stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
+            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity_alert','stocks.name_id','stocks.inventory_id','stocks.business_id','stocks.quantity','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
 
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image);
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -197,10 +201,10 @@ class StocksController extends Controller
         
         $stock_id = $request->stock_id;
 
-        $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.name_id','stocks.inventory_id','stocks.business_id','stocks.quantity', 'stocks.unit_id', 'stocks.inventory_id','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
+        $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity_alert','stocks.name_id','stocks.inventory_id','stocks.business_id','stocks.quantity', 'stocks.unit_id', 'stocks.inventory_id','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
 
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image);
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -230,7 +234,11 @@ class StocksController extends Controller
         $stock_id = $request->stock_id;       
 
         Stocks::where('id', $stock_id)->delete();
-
+        
+        ProductStocks::where('stock_id', $stock_id)->delete();
+        OptionStock::where('stock_id', $stock_id)->delete();
+        Customize::where('stock_id', $stock_id)->delete();
+        
         return $this->success([
             'stock_id' => (string)$stock_id,
         ],'Stock deleted successfully!');
@@ -280,19 +288,19 @@ class StocksController extends Controller
     public function update_quantity(Request $request)
     {   
         $stock_id = $request->stock_id;
-        $quantity = $request->quantity;
+        $quantity = $request->unit_quantity;
         if($quantity > 0){
             $quantity = abs($quantity);
 
-            //DB::select("UPDATE stocks where id = '$stock_id'  ");
-            $stock = Stocks::where('id',$stock_id)->increment('quantity',$quantity);
+            //DB::select("UPDATE stocks where id = '$stock_id'");
+            $stock = Stocks::where('id',$stock_id)->increment('unit_quantity',$quantity);
             
             //Stocks::where('id', $stock_id)->update(['quantity'=> DB::raw('quantity+1')]);
 
 
         }else{
             $quantity = abs($quantity);
-            $stock = Stocks::where('id',$stock_id)->decrement('quantity',$quantity);
+            $stock = Stocks::where('id',$stock_id)->decrement('unit_quantity',$quantity);
             //Stocks::where('id', $stock_id)->update(['quantity'=> DB::raw('quantity-1')]);
         }        
 

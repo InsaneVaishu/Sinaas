@@ -27,7 +27,7 @@ class CustomizesController extends Controller
         foreach($results as $result){    
             
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image); 
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -38,7 +38,7 @@ class CustomizesController extends Controller
                 "stock_id" => (string)$result->stock_id,
                 "stock_name" => (string)$result->name,
                 "unit_code"  => (string)$result->code,
-                "image" => $image,
+                "stock_image" => $image,
                 "image_name" => $result->image,
                 "default" => $result->default_extra,
                 "price" => (string)$result->price,
@@ -94,7 +94,7 @@ class CustomizesController extends Controller
         foreach($results as $result){    
             
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image);
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -106,7 +106,7 @@ class CustomizesController extends Controller
                 "stock_name" => (string)$result->name,
                 "unit_code"  => (string)$result->code,
                 "image" => $image,
-                "image_name" => $result->image,
+                "stock_image" => $result->image,
                 "default" => $result->default_extra,
                 "price" => (string)$result->price,
                 "max" => (string)$result->max,
@@ -135,7 +135,7 @@ class CustomizesController extends Controller
       
             
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image);
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -146,7 +146,7 @@ class CustomizesController extends Controller
                 "stock_id" => (string)$result->stock_id,
                 "stock_name" => (string)$result->name,
                 "image" => $image,
-                "image_name" => $result->image,
+                "stock_image" => $result->image,
                 "default" => $result->default_extra,
                 "price" => (string)$result->price,
                 "max" => (string)$result->max,
@@ -210,6 +210,7 @@ class CustomizesController extends Controller
         $customize_id = $request->customize_id;       
 
         Customize::where('id', $customize_id)->delete();
+        
 
         return $this->success([
             'customize_id' => (string)$customize_id,

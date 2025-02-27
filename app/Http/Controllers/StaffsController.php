@@ -49,7 +49,7 @@ class StaffsController extends Controller
         
 
         return $this->success([
-            'staffs' => $staffs,
+            'businesses' => $businesses,
             //'token' => $user->createToken('API Token')->plainTextToken
         ]);
     }

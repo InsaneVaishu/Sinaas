@@ -41,7 +41,7 @@ class ProductsController extends Controller
         $products = [];
         foreach($results as $result){
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image);
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -257,7 +257,7 @@ class ProductsController extends Controller
             $result = Products::query()->leftjoin("products_names", 'products_names.id', '=', 'products.productname_id')->where('products.id', $product->id)->first();
 
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image);
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -374,7 +374,7 @@ class ProductsController extends Controller
             $result = Products::query()->leftjoin("products_names", 'products_names.id', '=', 'products.productname_id')->where('products.id', $product_id)->first();
 
             if($result->image){
-                $image = env('APP_URL').Storage::url($result->image);
+                $image = env('APP_URL').Storage::url('app/public/'.$result->image);
             }
             else{
                 $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -406,7 +406,7 @@ class ProductsController extends Controller
         $result = Products::query()->leftjoin("products_names", 'products_names.id', '=', 'products.productname_id')->leftjoin("descriptions", 'descriptions.id', '=', 'products.description_id')->select("products.*","descriptions.*","products.id as id","products.status as status","products_names.name as name","descriptions.description as desc")->where('products.id', $product_id)->first();
 
         if($result->image){
-            $image = env('APP_URL').Storage::url('products/'.$result->image);
+            $image = env('APP_URL').Storage::url('app/public/'.$result->image);
         }
         else{
             $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -706,7 +706,7 @@ class ProductsController extends Controller
         ],'Product Tags updated successfully!');
     }
 
-    public function add_product_stock(Request $request)
+    public function add_product_stock(Request $request) 
     {
         $user_id = Auth::user()->id;
         $product_id = $request->product_id;
@@ -832,10 +832,10 @@ class ProductsController extends Controller
 
             $stock_id = $result->stock_id;
 
-            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'inventories.inventoryname_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity', 'stocks.unit_id', 'stocks.inventory_id','units.code AS code','inventories.inventory_image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
+            $result = Stocks::query()->leftJoin('inventories', 'inventories.id', '=', 'stocks.inventory_id')->leftJoin('inventory_names', 'inventory_names.id', '=', 'stocks.name_id')->leftjoin('units', 'units.id', '=', 'stocks.unit_id')->select('stocks.quantity', 'stocks.unit_id', 'stocks.inventory_id','units.code AS code','stocks.image as image','inventory_names.name AS name', 'stocks.id as id')->where('stocks.id', $stock_id)->first();
 
                 if($result->image){
-                    $image = env('APP_URL').Storage::url($result->image);
+                    $image = env('APP_URL').Storage::url('app/public/'.$result->image);
                 }
                 else{
                     $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -845,14 +845,14 @@ class ProductsController extends Controller
                         "business_id" => (string)$result->business_id,
                         "inventory_id"  => (string)$result->inventory_id,
                         "name"  => (string)$result->name,
-                        "quantity"  => (string)$result->quantity,
+                        "unit_quantity"  => (string)$result->quantity,
                         "stock_image" => $image,
                         "unit_id"  => (string)$result->unit_id,
                         "unit_code"  => (string)$result->code,
                         "quantity_alert" => (string)$result->quantity_alert];
 
 
-        }      
+        }
         
         return $this->success([
             'option_stocks' => $stock_list

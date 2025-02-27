@@ -37,7 +37,7 @@ class OptionsController extends Controller
             foreach($stocks_list as $stock){
 
                 if($stock->image){
-                    $image = env('APP_URL').Storage::url($stock->image);
+                    $image = env('APP_URL').Storage::url('app/public/'.$stock->image);
                 }
                 else{
                     $image = env('APP_URL').Storage::url('no-image.jpg');
@@ -85,7 +85,7 @@ class OptionsController extends Controller
             foreach($stocks_list as $stock){
 
                 if($stock->image){
-                    $image = env('APP_URL').Storage::url($stock->image);
+                    $image = env('APP_URL').Storage::url('app/public/'.$stock->image);
                 }
                 else{
                     $image = env('APP_URL').Storage::url('no-image.jpg');

@@ -6,9 +6,9 @@ use App\Models\Business;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
-
 use App\Models\BusinessBilling;
 use App\Models\BusinessWorking;
+
 use App\Models\BusinessDelivery;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -22,10 +22,11 @@ class BusinessController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {       
-        //echo Auth::user()->id; exit;
+    {
+        //return Business::all(); where('user_id', Auth::user()->id)->get()
         $user = Customer::where('id', Auth::user()->id)->first();
         $username = $user['first_name'];
+        
         $results = Business::where('user_id', Auth::user()->id)->get();
         $businesses = [];
         foreach($results as $result){
